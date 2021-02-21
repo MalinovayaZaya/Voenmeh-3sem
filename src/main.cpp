@@ -1,12 +1,12 @@
-/* Шашки (пока только для двух игроков) */
+/* РЁР°С€РєРё (РїРѕРєР° С‚РѕР»СЊРєРѕ РґР»СЏ РґРІСѓС… РёРіСЂРѕРєРѕРІ) */
 
-// main - 184 строка
+// main - 184 СЃС‚СЂРѕРєР°
 
 ///////////////////////////////////////////////////
 ///												///
 ///			 TO DO LIST							///
-///			 1. меню							///
-///			 2. экран победы					///
+///			 1. РјРµРЅСЋ							///
+///			 2. СЌРєСЂР°РЅ РїРѕР±РµРґС‹					///
 ///												///
 ///////////////////////////////////////////////////
 
@@ -16,7 +16,7 @@
 
 #include "Square.h"
 
-// определение состояния игры
+// РѕРїСЂРµРґРµР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂС‹
 static enum class GameState
 {
 	OUTLINE_CURRENT_PLAYER,
@@ -25,7 +25,7 @@ static enum class GameState
 	MOVING,
 };
 
-// определение победителя, ну либо ничьи
+// РѕРїСЂРµРґРµР»РµРЅРёРµ РїРѕР±РµРґРёС‚РµР»СЏ, РЅСѓ Р»РёР±Рѕ РЅРёС‡СЊРё
 static enum class Winner
 {
 	RED,
@@ -33,25 +33,25 @@ static enum class Winner
 	DRAW,
 };
 
-// получаем индекс 1D сетки 8 x 8 
+// РїРѕР»СѓС‡Р°РµРј РёРЅРґРµРєСЃ 1D СЃРµС‚РєРё 8 x 8 
 static inline int getIndex(const int row, const int col)
 {
 	return 8 * row + col;
 }
 
-// проверка выхода за пределы игрового поля
+// РїСЂРѕРІРµСЂРєР° РІС‹С…РѕРґР° Р·Р° РїСЂРµРґРµР»С‹ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 static inline bool isOutOfBounds(const int row, const int col)
 {
 	if (row < 0 || col < 0 || row > 7 || col > 7) return true;
 	else return false;
 }
 
-// загрузка текстур и удаление белого фона
+// Р·Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ Рё СѓРґР°Р»РµРЅРёРµ Р±РµР»РѕРіРѕ С„РѕРЅР°
 static SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* filePath)
 {
 	SDL_Texture* texture = nullptr;
 
-	// загрузка картинки по спец пути
+	// Р·Р°РіСЂСѓР·РєР° РєР°СЂС‚РёРЅРєРё РїРѕ СЃРїРµС† РїСѓС‚Рё
 	SDL_Surface* loadedSurface = SDL_LoadBMP(filePath);
 	if (loadedSurface == nullptr)
 	{
@@ -59,24 +59,24 @@ static SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* filePath)
 	}
 	else
 	{
-		// Color key image (убираем фон/белый)
+		// Color key image (СѓР±РёСЂР°РµРј С„РѕРЅ/Р±РµР»С‹Р№)
 		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 255, 255, 255));
 
-		// создаем текстуру
+		// СЃРѕР·РґР°РµРј С‚РµРєСЃС‚СѓСЂСѓ
 		texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 		if (texture == nullptr)
 		{
 			std::cout << "SDL could not create texture from surface! Error: " << SDL_GetError() << std::endl;
 		}
 
-		// освобождаем surface
+		// РѕСЃРІРѕР±РѕР¶РґР°РµРј surface
 		SDL_FreeSurface(loadedSurface);
 	}
 
 	return texture;
 }
 
-// возвращаем главную фишку
+// РІРѕР·РІСЂР°С‰Р°РµРј РіР»Р°РІРЅСѓСЋ С„РёС€РєСѓ
 static CheckerType primeChecker(CheckerType checker)
 {
 	if (checker == CheckerType::RED || checker == CheckerType::KING_RED) return CheckerType::RED;
@@ -84,7 +84,7 @@ static CheckerType primeChecker(CheckerType checker)
 	else return checker;
 }
 
-// аналогично, но для другого игрока
+// Р°РЅР°Р»РѕРіРёС‡РЅРѕ, РЅРѕ РґР»СЏ РґСЂСѓРіРѕРіРѕ РёРіСЂРѕРєР°
 static CheckerType oppositeChecker(CheckerType checker)
 {
 	if (checker == CheckerType::RED || checker == CheckerType::KING_RED) return CheckerType::BLACK;
@@ -99,7 +99,7 @@ static bool areOppositeCheckers(CheckerType checker1, CheckerType checker2)
 	else return false;
 }
 
-// определяем направления хода
+// РѕРїСЂРµРґРµР»СЏРµРј РЅР°РїСЂР°РІР»РµРЅРёСЏ С…РѕРґР°
 static struct Direction
 {
 	int deltaRow;
@@ -108,63 +108,63 @@ static struct Direction
 
 }northWest(-1, -1), northEast(-1, 1), southWest(1, -1), southEast(1, 1);
 
-// используем рекурсию для проверки направления хода
+// РёСЃРїРѕР»СЊР·СѓРµРј СЂРµРєСѓСЂСЃРёСЋ РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅР°РїСЂР°РІР»РµРЅРёСЏ С…РѕРґР°
 static void checkDirection(Square grid[], const Direction& direction, const CheckerType checker, const int row, const int col, const bool jumped)
 {
 	int nextRow = row + direction.deltaRow;
 	int nextCol = col + direction.deltaCol;
-	// проверяем наличие квадрата в поле
+	// РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РєРІР°РґСЂР°С‚Р° РІ РїРѕР»Рµ
 	if (!isOutOfBounds(nextRow, nextCol))
 	{
 		Square* squareAtDirection = &grid[getIndex(nextRow, nextCol)];
-		// если квадрат занят оппонентом
+		// РµСЃР»Рё РєРІР°РґСЂР°С‚ Р·Р°РЅСЏС‚ РѕРїРїРѕРЅРµРЅС‚РѕРј
 		if (areOppositeCheckers(checker, squareAtDirection->getChecker()))
 		{
 			int nextRow2 = row + 2 * direction.deltaRow;
 			int nextCol2 = col + 2 * direction.deltaCol;
-			// если квадрат не выходит за пределы поля
+			// РµСЃР»Рё РєРІР°РґСЂР°С‚ РЅРµ РІС‹С…РѕРґРёС‚ Р·Р° РїСЂРµРґРµР»С‹ РїРѕР»СЏ
 			if (!isOutOfBounds(nextRow2, nextCol2))
 			{
 				Square* nextSquareAtDirection = &grid[getIndex(nextRow2, nextCol2)];
-				// если следующий по направлению квадрат пуст и не выделен как возможный для хода
+				// РµСЃР»Рё СЃР»РµРґСѓСЋС‰РёР№ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ РєРІР°РґСЂР°С‚ РїСѓСЃС‚ Рё РЅРµ РІС‹РґРµР»РµРЅ РєР°Рє РІРѕР·РјРѕР¶РЅС‹Р№ РґР»СЏ С…РѕРґР°
 				if (nextSquareAtDirection->getChecker() == CheckerType::NONE && nextSquareAtDirection->getHighlight() != HighlightType::NEXT_POSSIBLE_POSITION)
 				{
 					std::cout << nextRow2 << ", " << nextCol2 << std::endl;
 
-					// выделяем следующий возможный ход
+					// РІС‹РґРµР»СЏРµРј СЃР»РµРґСѓСЋС‰РёР№ РІРѕР·РјРѕР¶РЅС‹Р№ С…РѕРґ
 					nextSquareAtDirection->setHighlightTo(HighlightType::NEXT_POSSIBLE_POSITION);
 
-					// помечаем фишку для возможного удаления
+					// РїРѕРјРµС‡Р°РµРј С„РёС€РєСѓ РґР»СЏ РІРѕР·РјРѕР¶РЅРѕРіРѕ СѓРґР°Р»РµРЅРёСЏ
 					nextSquareAtDirection->flagChecker(squareAtDirection);
 
 					// Store the square would occur from
 					nextSquareAtDirection->setPreviousSquare(&grid[getIndex(row, col)]);
 
-					// создаем возможные направления хода
+					// СЃРѕР·РґР°РµРј РІРѕР·РјРѕР¶РЅС‹Рµ РЅР°РїСЂР°РІР»РµРЅРёСЏ С…РѕРґР°
 					Direction directions[4] = { northWest, northEast, southWest, southEast };
 
-					// рекурсивно проверяем квадраты, в зависимости от фишки
-					// если белая фишка
+					// СЂРµРєСѓСЂСЃРёРІРЅРѕ РїСЂРѕРІРµСЂСЏРµРј РєРІР°РґСЂР°С‚С‹, РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С„РёС€РєРё
+					// РµСЃР»Рё Р±РµР»Р°СЏ С„РёС€РєР°
 					if (checker == CheckerType::RED)
 					{
-						// проверяем north west и north east
+						// РїСЂРѕРІРµСЂСЏРµРј north west Рё north east
 						for (int i = 0; i < 2; ++i) checkDirection(grid, directions[i], checker, nextRow2, nextCol2, true);
 					}
-					// если черная фишка
+					// РµСЃР»Рё С‡РµСЂРЅР°СЏ С„РёС€РєР°
 					else if (checker == CheckerType::BLACK)
 					{
-						// проверяем south west и south east
+						// РїСЂРѕРІРµСЂСЏРµРј south west Рё south east
 						for (int i = 2; i < 4; ++i) checkDirection(grid, directions[i], checker, nextRow2, nextCol2, true);
 					}
-					// далее проверяем дамок
+					// РґР°Р»РµРµ РїСЂРѕРІРµСЂСЏРµРј РґР°РјРѕРє
 					else
 					{
-						// проверяем все направления
+						// РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 						for (int i = 0; i < 4; ++i) checkDirection(grid, directions[i], checker, nextRow2, nextCol2, true);
 					}
 				}
 			
-				// если следующее направление в квадрате - это стартовая позиция (дамки могут вернуться в исходное положение)
+				// РµСЃР»Рё СЃР»РµРґСѓСЋС‰РµРµ РЅР°РїСЂР°РІР»РµРЅРёРµ РІ РєРІР°РґСЂР°С‚Рµ - СЌС‚Рѕ СЃС‚Р°СЂС‚РѕРІР°СЏ РїРѕР·РёС†РёСЏ (РґР°РјРєРё РјРѕРіСѓС‚ РІРµСЂРЅСѓС‚СЊСЃСЏ РІ РёСЃС…РѕРґРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ)
 			}
 		}
 		// Else if square at direction is empty and no jumps have occured
@@ -178,18 +178,18 @@ static void checkDirection(Square grid[], const Direction& direction, const Chec
 
 int main(int argc, char* argv[])
 {
-	// определение размера окна
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ СЂР°Р·РјРµСЂР° РѕРєРЅР°
 	const int windowWidth = 800;
 	const int windowHeight = windowWidth;
 
-	// инициализация SDL video subsystem (надо бы отдельную функцию для этого создать)
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SDL video subsystem (РЅР°РґРѕ Р±С‹ РѕС‚РґРµР»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ РґР»СЏ СЌС‚РѕРіРѕ СЃРѕР·РґР°С‚СЊ)
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		std::cout << "SDL could not intialise! Error: " << SDL_GetError() << std::endl;
 		return -1;
 	}
 
-	// создание окна
+	// СЃРѕР·РґР°РЅРёРµ РѕРєРЅР°
 	SDL_Window* window = SDL_CreateWindow("Checkers", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
 	if (window == nullptr)
 	{
@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
 	//The image we will load and show on the screen
 	SDL_Surface* mAbout = SDL_LoadBMP("assets/ABOUT.bmp");
 
-	// создание второго окна (правила игры)
+	// СЃРѕР·РґР°РЅРёРµ РІС‚РѕСЂРѕРіРѕ РѕРєРЅР° (РїСЂР°РІРёР»Р° РёРіСЂС‹)
 	SDL_Window* window2 = SDL_CreateWindow("About", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
 	if (window2 == nullptr)
 	{
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
 	//Update the surface
 	SDL_UpdateWindowSurface(window2);
 
-	// создание renderer'а
+	// СЃРѕР·РґР°РЅРёРµ renderer'Р°
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 	if (renderer == nullptr)
 	{
@@ -228,76 +228,76 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	// установка контура текстуры и удаление лишнего белого фона
+	// СѓСЃС‚Р°РЅРѕРІРєР° РєРѕРЅС‚СѓСЂР° С‚РµРєСЃС‚СѓСЂС‹ Рё СѓРґР°Р»РµРЅРёРµ Р»РёС€РЅРµРіРѕ Р±РµР»РѕРіРѕ С„РѕРЅР°
 	Checker::sOutline = loadTexture(renderer, "assets/Outline.bmp");
 
-	// загрузка текстур шашек и удаление лишнего белого фона
+	// Р·Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ С€Р°С€РµРє Рё СѓРґР°Р»РµРЅРёРµ Р»РёС€РЅРµРіРѕ Р±РµР»РѕРіРѕ С„РѕРЅР°
 	Checker::sTextureCache[(int)CheckerType::NONE] = loadTexture(renderer, "assets/Empty.bmp");
 	Checker::sTextureCache[(int)CheckerType::RED] = loadTexture(renderer, "assets/RedChecker.bmp");
 	Checker::sTextureCache[(int)CheckerType::BLACK] = loadTexture(renderer, "assets/BlackChecker.bmp");
 	Checker::sTextureCache[(int)CheckerType::KING_RED] = loadTexture(renderer, "assets/KingRedChecker.bmp");
 	Checker::sTextureCache[(int)CheckerType::KING_BLACK] = loadTexture(renderer, "assets/KingBlackChecker.bmp");
 
-	// определение highlight'ов (RGBA)
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ highlight'РѕРІ (RGBA)
 	Highlight::sColourCache[(int)HighlightType::NONE] = { 0, 0, 0, 0 };
 	Highlight::sColourCache[(int)HighlightType::MOUSE_OVER] = { 94, 152, 235, 150 }; // blue
 	Highlight::sColourCache[(int)HighlightType::MOVABLE] = { 255, 255, 255, 150}; // white
 	Highlight::sColourCache[(int)HighlightType::SELECTED] = { 94, 152, 235, 150 }; // blue
 	Highlight::sColourCache[(int)HighlightType::NEXT_POSSIBLE_POSITION] = { 41, 242, 45, 120 }; // green
 
-	// установка всех renderer'ов
+	// СѓСЃС‚Р°РЅРѕРІРєР° РІСЃРµС… renderer'РѕРІ
 	Checker::sRenderer = renderer;
 	Highlight::sRenderer = renderer;
 	Square::sRenderer = renderer;
 
-	// создание сетки квадратов 8 x 8 (мб 10 х 10 ?)
+	// СЃРѕР·РґР°РЅРёРµ СЃРµС‚РєРё РєРІР°РґСЂР°С‚РѕРІ 8 x 8 (РјР± 10 С… 10 ?)
 	const int rows = 8;
 	const int cols = 8;
 	const int totalSquares = rows * cols;
 	Square checkerboard[totalSquares];
 
-	// установка двух разноцветных фонов (тип шахматная доска)
+	// СѓСЃС‚Р°РЅРѕРІРєР° РґРІСѓС… СЂР°Р·РЅРѕС†РІРµС‚РЅС‹С… С„РѕРЅРѕРІ (С‚РёРї С€Р°С…РјР°С‚РЅР°СЏ РґРѕСЃРєР°)
 	SDL_Color backgrounds[2];
 	backgrounds[0] = { 133, 71, 0, 255 };		// dark brown
 	backgrounds[1] = { 230, 186, 127, 255 };	// bright brown
 
-	// орпеделение границ и получение размеров квадратиков
+	// РѕСЂРїРµРґРµР»РµРЅРёРµ РіСЂР°РЅРёС† Рё РїРѕР»СѓС‡РµРЅРёРµ СЂР°Р·РјРµСЂРѕРІ РєРІР°РґСЂР°С‚РёРєРѕРІ
 	const int borderThickness = 5;
 	const int numberOfBorders = cols + 1;
 	const int squareWidth = (windowWidth - numberOfBorders * borderThickness) / cols;
 	const int squareHeight = squareWidth;
 
-	// определение счетчиков для отслеживания шашек на поле
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ СЃС‡РµС‚С‡РёРєРѕРІ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ С€Р°С€РµРє РЅР° РїРѕР»Рµ
 	int blackCounter = 12;
 	int redCounter = 12;
 	int flipCounter = 1;
 	int index = 0;
 
-	// установка расположения всех квадратов, размеров, расположения шашек и цвета фонов
+	// СѓСЃС‚Р°РЅРѕРІРєР° СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ РІСЃРµС… РєРІР°РґСЂР°С‚РѕРІ, СЂР°Р·РјРµСЂРѕРІ, СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ С€Р°С€РµРє Рё С†РІРµС‚Р° С„РѕРЅРѕРІ
 	int squareStartY = borderThickness;
 	for (int row = 0; row < rows; ++row)
 	{
 		int squareStartX = borderThickness;
 		for (int col = 0; col < cols; ++col)
 		{
-			//  установка расположения всех квадрата
+			//  СѓСЃС‚Р°РЅРѕРІРєР° СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ РІСЃРµС… РєРІР°РґСЂР°С‚Р°
 			checkerboard[index].setLocation(row, col);
 
-			// альтернативный цвет фона
+			// Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅС‹Р№ С†РІРµС‚ С„РѕРЅР°
 			flipCounter = 1 - flipCounter;
 			checkerboard[index].setBackgroundColourTo(backgrounds[flipCounter]);
 
-			// установка стартовых позиций и размеров
+			// СѓСЃС‚Р°РЅРѕРІРєР° СЃС‚Р°СЂС‚РѕРІС‹С… РїРѕР·РёС†РёР№ Рё СЂР°Р·РјРµСЂРѕРІ
 			SDL_Rect rect = { squareStartX, squareStartY, squareWidth, squareHeight };
 			checkerboard[index].setRectTo(rect);
 
-			// установка черных на ВЕРХНЕЙ половине поля
+			// СѓСЃС‚Р°РЅРѕРІРєР° С‡РµСЂРЅС‹С… РЅР° Р’Р•Р РҐРќР•Р™ РїРѕР»РѕРІРёРЅРµ РїРѕР»СЏ
 			if (blackCounter > 0 && flipCounter)
 			{
 				checkerboard[index].setCheckerTo(CheckerType::BLACK);
 				--blackCounter;
 			}
-			// установка белых на НИЖНЕЙ половине поля
+			// СѓСЃС‚Р°РЅРѕРІРєР° Р±РµР»С‹С… РЅР° РќРР–РќР•Р™ РїРѕР»РѕРІРёРЅРµ РїРѕР»СЏ
 			if (index > 39 && redCounter > 0 && flipCounter)
 			{
 				checkerboard[index].setCheckerTo(CheckerType::RED);
@@ -313,7 +313,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	// переменные для гейм-лупа
+	// РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РіРµР№Рј-Р»СѓРїР°
 	bool stop = false;
 	SDL_Event event;
 	CheckerType currentPlayer = CheckerType::RED;
@@ -321,58 +321,58 @@ int main(int argc, char* argv[])
 	bool render = true;
 	Winner winner = Winner::DRAW;
 
-	// установка счетчиков для съеденных фишек
+	// СѓСЃС‚Р°РЅРѕРІРєР° СЃС‡РµС‚С‡РёРєРѕРІ РґР»СЏ СЃСЉРµРґРµРЅРЅС‹С… С„РёС€РµРє
 	int blackCheckers = 12;
 	int redCheckers = 12;
 
-	// гейм-луп (игровой цикл)
+	// РіРµР№Рј-Р»СѓРї (РёРіСЂРѕРІРѕР№ С†РёРєР»)
 	while (!stop)
 	{
-		// обработка событий
+		// РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёР№
 		while (SDL_PollEvent(&event) != 0)
 		{
-			// обработка выхода (красный крэстик)
+			// РѕР±СЂР°Р±РѕС‚РєР° РІС‹С…РѕРґР° (РєСЂР°СЃРЅС‹Р№ РєСЂСЌСЃС‚РёРє)
 			if (event.type == SDL_QUIT)
 			{
 				stop = true;
 			}
-			// обработка событий с мышкой
+			// РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёР№ СЃ РјС‹С€РєРѕР№
 			for (int i = 0; i < totalSquares; ++i)
 			{
-				// состояние движения
+				// СЃРѕСЃС‚РѕСЏРЅРёРµ РґРІРёР¶РµРЅРёСЏ
 				if (gameState == GameState::MOVING)
 				{
 					if (event.type == SDL_MOUSEBUTTONDOWN)
 					{
-						// если квадрат помечен как возможная позиция для передвижения фишки
+						// РµСЃР»Рё РєРІР°РґСЂР°С‚ РїРѕРјРµС‡РµРЅ РєР°Рє РІРѕР·РјРѕР¶РЅР°СЏ РїРѕР·РёС†РёСЏ РґР»СЏ РїРµСЂРµРґРІРёР¶РµРЅРёСЏ С„РёС€РєРё
 						if (checkerboard[i].getHighlight() == HighlightType::NEXT_POSSIBLE_POSITION)
 						{
 							if (checkerboard[i].isMouseInside())
 							{
-								// помечаем флагом фишку
+								// РїРѕРјРµС‡Р°РµРј С„Р»Р°РіРѕРј С„РёС€РєСѓ
 								Square* checkerFlagged = checkerboard[i].getCheckerFlagged();
 
-								// получение позиции из которой был прыжок (ход)
+								// РїРѕР»СѓС‡РµРЅРёРµ РїРѕР·РёС†РёРё РёР· РєРѕС‚РѕСЂРѕР№ Р±С‹Р» РїСЂС‹Р¶РѕРє (С…РѕРґ)
 								Square* previousSquare = checkerboard[i].getPreviousSquare();
 
 								// Back track through the pointers of checkers flagged
 								while (checkerFlagged != nullptr)
 								{
-									// убираем фишку
+									// СѓР±РёСЂР°РµРј С„РёС€РєСѓ
 									checkerFlagged->setCheckerTo(CheckerType::NONE);
 
-									// уменьшаем количество фишек для другого игрока
+									// СѓРјРµРЅСЊС€Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ С„РёС€РµРє РґР»СЏ РґСЂСѓРіРѕРіРѕ РёРіСЂРѕРєР°
 									if (currentPlayer == CheckerType::RED) --blackCheckers;
 									else --redCheckers;
 
-									// отмечаем следующую фишку из предыдущего квадрата
+									// РѕС‚РјРµС‡Р°РµРј СЃР»РµРґСѓСЋС‰СѓСЋ С„РёС€РєСѓ РёР· РїСЂРµРґС‹РґСѓС‰РµРіРѕ РєРІР°РґСЂР°С‚Р°
 									checkerFlagged = previousSquare->getCheckerFlagged();
 
-									// получаем новый предыдущий квадрат
+									// РїРѕР»СѓС‡Р°РµРј РЅРѕРІС‹Р№ РїСЂРµРґС‹РґСѓС‰РёР№ РєРІР°РґСЂР°С‚
 									previousSquare = previousSquare->getPreviousSquare();
 								}
 
-								// выявляем победителя
+								// РІС‹СЏРІР»СЏРµРј РїРѕР±РµРґРёС‚РµР»СЏ
 								if (redCheckers == 0)
 								{
 									winner = Winner::BLACK;
@@ -384,55 +384,55 @@ int main(int argc, char* argv[])
 									stop = true;
 								}
 
-								// убираем все флаги и указатели на предыдущие квадраты 
+								// СѓР±РёСЂР°РµРј РІСЃРµ С„Р»Р°РіРё Рё СѓРєР°Р·Р°С‚РµР»Рё РЅР° РїСЂРµРґС‹РґСѓС‰РёРµ РєРІР°РґСЂР°С‚С‹ 
 								for (int i = 0; i < totalSquares; ++i)
 								{
 									checkerboard[i].flagChecker(nullptr);
 									checkerboard[i].setPreviousSquare(nullptr);
 								}
 
-								// получаем выбранную фишку
+								// РїРѕР»СѓС‡Р°РµРј РІС‹Р±СЂР°РЅРЅСѓСЋ С„РёС€РєСѓ
 								CheckerType checker = Square::sSelected->getChecker();
 
-								// по достижении белой фишкой другого конца поля, превращаем её в дамку
+								// РїРѕ РґРѕСЃС‚РёР¶РµРЅРёРё Р±РµР»РѕР№ С„РёС€РєРѕР№ РґСЂСѓРіРѕРіРѕ РєРѕРЅС†Р° РїРѕР»СЏ, РїСЂРµРІСЂР°С‰Р°РµРј РµС‘ РІ РґР°РјРєСѓ
 								if (i > 0 && i < 8 && checker == CheckerType::RED)
 								{
 									checkerboard[i].setCheckerTo(CheckerType::KING_RED);
 								}
-								// по достижении черной фишкой другого конца поля, превращаем её в дамку
+								// РїРѕ РґРѕСЃС‚РёР¶РµРЅРёРё С‡РµСЂРЅРѕР№ С„РёС€РєРѕР№ РґСЂСѓРіРѕРіРѕ РєРѕРЅС†Р° РїРѕР»СЏ, РїСЂРµРІСЂР°С‰Р°РµРј РµС‘ РІ РґР°РјРєСѓ
 								else if (i > 55 && i < 64 && checker == CheckerType::BLACK)
 								{
 									checkerboard[i].setCheckerTo(CheckerType::KING_BLACK);
 								}
-								// иначе, оставляем всё как есть
+								// РёРЅР°С‡Рµ, РѕСЃС‚Р°РІР»СЏРµРј РІСЃС‘ РєР°Рє РµСЃС‚СЊ
 								else
 								{
 									checkerboard[i].setCheckerTo(checker);
 								}
 
-								// даём возмодность игроку заново выбрать фишку (ставим выделение хода на - none или не выбранно)
+								// РґР°С‘Рј РІРѕР·РјРѕРґРЅРѕСЃС‚СЊ РёРіСЂРѕРєСѓ Р·Р°РЅРѕРІРѕ РІС‹Р±СЂР°С‚СЊ С„РёС€РєСѓ (СЃС‚Р°РІРёРј РІС‹РґРµР»РµРЅРёРµ С…РѕРґР° РЅР° - none РёР»Рё РЅРµ РІС‹Р±СЂР°РЅРЅРѕ)
 								Square::sSelected->setCheckerTo(CheckerType::NONE);
 
-								// передаем инициативу другому игроку
+								// РїРµСЂРµРґР°РµРј РёРЅРёС†РёР°С‚РёРІСѓ РґСЂСѓРіРѕРјСѓ РёРіСЂРѕРєСѓ
 								currentPlayer = oppositeChecker(currentPlayer);
 								
-								// удаляем все подсказки (выделение фишек)
+								// СѓРґР°Р»СЏРµРј РІСЃРµ РїРѕРґСЃРєР°Р·РєРё (РІС‹РґРµР»РµРЅРёРµ С„РёС€РµРє)
 								for (int i = 0; i < totalSquares; ++i)
 								{
 									checkerboard[i].setHighlightTo(HighlightType::NONE);
 								}
 
-								// устанавливаем состояние игры для выделения текущего игрока
+								// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РёРіСЂС‹ РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ С‚РµРєСѓС‰РµРіРѕ РёРіСЂРѕРєР°
 								gameState = GameState::OUTLINE_CURRENT_PLAYER;
 
-								// устанавливаем render
+								// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј render
 								render = true;
 
 							}
 						}
 					}
 				}
-				// выбираем позицию или ходим
+				// РІС‹Р±РёСЂР°РµРј РїРѕР·РёС†РёСЋ РёР»Рё С…РѕРґРёРј
 				if (gameState == GameState::SELECTING || gameState == GameState::MOVING)
 				{
 					if (event.type == SDL_MOUSEBUTTONDOWN)
@@ -454,10 +454,10 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		// если выбираем позицию
+		// РµСЃР»Рё РІС‹Р±РёСЂР°РµРј РїРѕР·РёС†РёСЋ
 		if (gameState == GameState::OUTLINE_CURRENT_PLAYER)
 		{
-			// добавляем контур к шашкам текущего игрока
+			// РґРѕР±Р°РІР»СЏРµРј РєРѕРЅС‚СѓСЂ Рє С€Р°С€РєР°Рј С‚РµРєСѓС‰РµРіРѕ РёРіСЂРѕРєР°
 			for (int i = 0; i < totalSquares; ++i)
 			{
 				if (primeChecker(checkerboard[i].getChecker()) == currentPlayer)
@@ -470,104 +470,104 @@ int main(int argc, char* argv[])
 				}
 			}
 
-			// устанавливаем render
+			// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј render
 			render = true;
 
-			// мняем состояние игры на выбор - selecting
+			// РјРЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РёРіСЂС‹ РЅР° РІС‹Р±РѕСЂ - selecting
 			gameState = GameState::SELECTING;
 		}
 
-		// если квадрат был выбран
+		// РµСЃР»Рё РєРІР°РґСЂР°С‚ Р±С‹Р» РІС‹Р±СЂР°РЅ
 		if (gameState == GameState::SELECTED)
 		{
-			// убираем все предыдущие выделения
+			// СѓР±РёСЂР°РµРј РІСЃРµ РїСЂРµРґС‹РґСѓС‰РёРµ РІС‹РґРµР»РµРЅРёСЏ
 			for (int i = 0; i < totalSquares; ++i)
 			{
 				checkerboard[i].setHighlightTo(HighlightType::NONE);
 			}
 
-			// выделяем выбранный квадрат
+			// РІС‹РґРµР»СЏРµРј РІС‹Р±СЂР°РЅРЅС‹Р№ РєРІР°РґСЂР°С‚
 			Square::sSelected->setHighlightTo(HighlightType::SELECTED);
 
-			// получаем координаты выбранного квадрата
+			// РїРѕР»СѓС‡Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РєРІР°РґСЂР°С‚Р°
 			int row;
 			int col;
 			Square::sSelected->getLocation(&row, &col);
 
-			// получаем выбранную фишку
+			// РїРѕР»СѓС‡Р°РµРј РІС‹Р±СЂР°РЅРЅСѓСЋ С„РёС€РєСѓ
 			CheckerType checker = Square::sSelected->getChecker();
 
-			// выделяем возможные направления хода
+			// РІС‹РґРµР»СЏРµРј РІРѕР·РјРѕР¶РЅС‹Рµ РЅР°РїСЂР°РІР»РµРЅРёСЏ С…РѕРґР°
 			Direction directions[4] = { northWest, northEast, southWest, southEast };
 
-			// если белая фишка
+			// РµСЃР»Рё Р±РµР»Р°СЏ С„РёС€РєР°
 			if (checker == CheckerType::RED)
 			{
-				// проверяем north west и north east
+				// РїСЂРѕРІРµСЂСЏРµРј north west Рё north east
 				for (int i = 0; i < 2; ++i) checkDirection(checkerboard, directions[i], checker, row, col, false);
 			}
-			// если черная фишка
+			// РµСЃР»Рё С‡РµСЂРЅР°СЏ С„РёС€РєР°
 			else if (checker == CheckerType::BLACK)
 			{
-				// проверяем south west и south east
+				// РїСЂРѕРІРµСЂСЏРµРј south west Рё south east
 				for (int i = 2; i < 4; ++i) checkDirection(checkerboard, directions[i], checker, row, col, false);
 			}
-			// далее проверяем дамок
+			// РґР°Р»РµРµ РїСЂРѕРІРµСЂСЏРµРј РґР°РјРѕРє
 			else
 			{
-				// проверяем все направления
+				// РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 				for (int i = 0; i < 4; ++i) checkDirection(checkerboard, directions[i], checker, row, col, false);
 			}
 
-			// устанавливаем состояние игры на moving
+			// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РёРіСЂС‹ РЅР° moving
 			gameState = GameState::MOVING;
 
-			// устанавливаем флаг render
+			// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі render
 			render = true;
 		}
 
-		// рендерим только тогда, когда походили, либо необходим highlighting
+		// СЂРµРЅРґРµСЂРёРј С‚РѕР»СЊРєРѕ С‚РѕРіРґР°, РєРѕРіРґР° РїРѕС…РѕРґРёР»Рё, Р»РёР±Рѕ РЅРµРѕР±С…РѕРґРёРј highlighting
 		if (render)
 		{
-			// красим экран в черный
+			// РєСЂР°СЃРёРј СЌРєСЂР°РЅ РІ С‡РµСЂРЅС‹Р№
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);
 		
-			// рендерим поле
+			// СЂРµРЅРґРµСЂРёРј РїРѕР»Рµ
 			for (int i = 0; i < totalSquares; ++i)
 			{
 				checkerboard[i].renderSquare();
 			}
 
-			// обновляем экран из буфера, чистим буфер
+			// РѕР±РЅРѕРІР»СЏРµРј СЌРєСЂР°РЅ РёР· Р±СѓС„РµСЂР°, С‡РёСЃС‚РёРј Р±СѓС„РµСЂ
 			SDL_RenderPresent(renderer);
 
-			// устанавливаем флаг render
+			// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі render
 			render = false;
 		}
 
-		// замедляем программу
+		// Р·Р°РјРµРґР»СЏРµРј РїСЂРѕРіСЂР°РјРјСѓ
 		SDL_Delay(10);
 
 	}
 
-	// выводим победителя в консоль (хорошо бы экран победы допилить)
+	// РІС‹РІРѕРґРёРј РїРѕР±РµРґРёС‚РµР»СЏ РІ РєРѕРЅСЃРѕР»СЊ (С…РѕСЂРѕС€Рѕ Р±С‹ СЌРєСЂР°РЅ РїРѕР±РµРґС‹ РґРѕРїРёР»РёС‚СЊ)
 	if (winner == Winner::RED) std::cout << "The winner is RED!" << std::endl;
 	else if (winner == Winner::BLACK) std::cout << "The winner is BLACK!" << std::endl;
 	else std::cout << "It's a DRAW!" << std::endl;
 
-	// освобождаем текстуру outline
+	// РѕСЃРІРѕР±РѕР¶РґР°РµРј С‚РµРєСЃС‚СѓСЂСѓ outline
 	SDL_DestroyTexture(Checker::sOutline);
 	Checker::sOutline = nullptr;
 
-	// освобождаем текстуру highlight 
+	// РѕСЃРІРѕР±РѕР¶РґР°РµРј С‚РµРєСЃС‚СѓСЂСѓ highlight 
 	for (int i = 0; i < Checker::sTotalTextures; ++i)
 	{
 		SDL_DestroyTexture(Checker::sTextureCache[i]);
 		Checker::sTextureCache[i] = nullptr;
 	}
 	
-	// уничтожаем renderer и window
+	// СѓРЅРёС‡С‚РѕР¶Р°РµРј renderer Рё window
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_DestroyWindow(window2);
@@ -579,7 +579,7 @@ int main(int argc, char* argv[])
 	SDL_FreeSurface(mAbout);
 	mAbout = NULL;
 
-	// выходим из SDL
+	// РІС‹С…РѕРґРёРј РёР· SDL
 	SDL_Quit();
 
 	return 0;
