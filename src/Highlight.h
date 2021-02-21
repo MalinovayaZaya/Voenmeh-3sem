@@ -1,8 +1,8 @@
-/* класс для подсказок и тп*/
+/* РєР»Р°СЃСЃ РґР»СЏ РїРѕРґСЃРєР°Р·РѕРє Рё С‚Рї*/
 #pragma once
 #include <SDL.h>
 
-// определение типов highlight'а
+// РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РёРїРѕРІ highlight'Р°
 enum class HighlightType
 {
 	NONE,
@@ -15,35 +15,35 @@ enum class HighlightType
 class Highlight
 {
 public:
-	// определение renderer'а
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ renderer'Р°
 	static SDL_Renderer* sRenderer;
 
-	// создание статического массива для сохранения цветов
+	// СЃРѕР·РґР°РЅРёРµ СЃС‚Р°С‚РёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ С†РІРµС‚РѕРІ
 	static const int sTotalColours = 5;
 	static SDL_Color sColourCache[sTotalColours];
 
 private:
-	// определение типов highlight'а
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РёРїРѕРІ highlight'Р°
 	HighlightType mHighlightType;
 
-	// определение цветов
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ С†РІРµС‚РѕРІ
 	SDL_Color* mColour;
 
-	// определение зоны highlight'а
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ Р·РѕРЅС‹ highlight'Р°
 	SDL_Rect mRect;
 
 public:
-	// конструктор
+	// РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	Highlight();
 
-	// установка зоны highlight'а
+	// СѓСЃС‚Р°РЅРѕРІРєР° Р·РѕРЅС‹ highlight'Р°
 	void setRectTo(const SDL_Rect& rect);
 
 	// Set'n'get highlight
 	void setHighlightTo(HighlightType highlightType);
 	HighlightType getHighlight();
 
-	// Render highlight'а
+	// Render highlight'Р°
 	void renderHighlight();
 	
 };
