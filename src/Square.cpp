@@ -62,14 +62,14 @@ void Square::setShowOutlineTo(const bool showOutline)
 
 void Square::renderSquare()
 {
-	// render фона
+	// render С„РѕРЅР°
 	SDL_SetRenderDrawColor(sRenderer, mBackgroundColour.r, mBackgroundColour.g, mBackgroundColour.b, mBackgroundColour.a);
 	SDL_RenderFillRect(sRenderer, &mRect);
 
-	// render highlight'а (если он тут есть)
+	// render highlight'Р° (РµСЃР»Рё РѕРЅ С‚СѓС‚ РµСЃС‚СЊ)
 	mHighlight.renderHighlight();
 
-	// render фишки (если он тут есть)
+	// render С„РёС€РєРё (РµСЃР»Рё РѕРЅ С‚СѓС‚ РµСЃС‚СЊ)
 	mChecker.renderChecker();
 }
 
@@ -78,27 +78,27 @@ bool Square::isMouseInside()
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 
-	// мышь левее квадрата
+	// РјС‹С€СЊ Р»РµРІРµРµ РєРІР°РґСЂР°С‚Р°
 	if (x < mRect.x)
 	{
 		return false;
 	}
-	// мышь правее квадрата
+	// РјС‹С€СЊ РїСЂР°РІРµРµ РєРІР°РґСЂР°С‚Р°
 	else if (x > mRect.x + mRect.w)
 	{
 		return false;
 	}
-	// мышь выше квадрата
+	// РјС‹С€СЊ РІС‹С€Рµ РєРІР°РґСЂР°С‚Р°
 	else if (y < mRect.y)
 	{
 		return false;
 	}
-	// мышь ниже квадрата
+	// РјС‹С€СЊ РЅРёР¶Рµ РєРІР°РґСЂР°С‚Р°
 	else if (y > mRect.y + mRect.h)
 	{
 		return false;
 	}
-	// мышь в квадрате
+	// РјС‹С€СЊ РІ РєРІР°РґСЂР°С‚Рµ
 	else
 	{
 		return true;
