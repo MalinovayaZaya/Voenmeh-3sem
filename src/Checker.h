@@ -1,8 +1,8 @@
-/* класс для ШаШеК */
+/* РєР»Р°СЃСЃ РґР»СЏ РЁР°РЁРµРљ */
 #pragma once
 #include <SDL.h>
 
-// определение типов фишек
+// РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РёРїРѕРІ С„РёС€РµРє
 enum class CheckerType
 {
 	NONE,
@@ -15,33 +15,33 @@ enum class CheckerType
 class Checker
 {
 public:
-	// определение renderer'а
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ renderer'Р°
 	static SDL_Renderer* sRenderer;
 
-	// создание статического массива для сохранения текстур шашек
+	// СЃРѕР·РґР°РЅРёРµ СЃС‚Р°С‚РёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ С‚РµРєСЃС‚СѓСЂ С€Р°С€РµРє
 	static const int sTotalTextures = 5;
 	static SDL_Texture* sTextureCache[sTotalTextures];
 
-	// определение checker outline текстуры
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ checker outline С‚РµРєСЃС‚СѓСЂС‹
 	static SDL_Texture* sOutline;
 
 private:
-	// определение типов фишек
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РёРїРѕРІ С„РёС€РµРє
 	CheckerType mCheckerType;
 
-	// определение текстуры фишки и её параметров
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РµРєСЃС‚СѓСЂС‹ С„РёС€РєРё Рё РµС‘ РїР°СЂР°РјРµС‚СЂРѕРІ
 	SDL_Rect mRect;
 	SDL_Texture* mTexture;
 
-	// определение размера контура, позиции и флага 
+	// РѕРїСЂРµРґРµР»РµРЅРёРµ СЂР°Р·РјРµСЂР° РєРѕРЅС‚СѓСЂР°, РїРѕР·РёС†РёРё Рё С„Р»Р°РіР° 
 	SDL_Rect mOutlineRect;
 	bool mShowOutline;
 
 public:
-	// конструктор
+	// РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	Checker();
 
-	// утавновка типа фишки и её получение
+	// СѓС‚Р°РІРЅРѕРІРєР° С‚РёРїР° С„РёС€РєРё Рё РµС‘ РїРѕР»СѓС‡РµРЅРёРµ
 	void setCheckerTo(CheckerType checkerType);
 	CheckerType getChecker();
 
@@ -51,8 +51,7 @@ public:
 	// Set show outline flag
 	void setShowOutlineTo(const bool showOutline);
 
-	// Render фишки
+	// Render С„РёС€РєРё
 	void renderChecker();
 	
 };
-
