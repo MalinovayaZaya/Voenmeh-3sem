@@ -27,7 +27,7 @@ HighlightType Highlight::getHighlight()
 
 void Highlight::renderHighlight()
 {
-	// render highlight'а только если квадрат пуст
+	// render highlight'Р° С‚РѕР»СЊРєРѕ РµСЃР»Рё РєРІР°РґСЂР°С‚ РїСѓСЃС‚
 	if (mHighlightType != HighlightType::NONE)
 	{
 		SDL_SetRenderDrawBlendMode(sRenderer, SDL_BLENDMODE_BLEND);
